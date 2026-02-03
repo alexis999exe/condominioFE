@@ -1,0 +1,307 @@
+/* ═══════════════════════════════════════════
+   NOTIFICATION BELL + PANEL
+   ═══════════════════════════════════════════ */
+
+/* ── wrapper (posicionamiento relativo para el dropdown) ── */
+.notif-bell-wrapper {
+  position: relative;
+}
+
+/* ── botón campana ── */
+.notif-bell-btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.notif-bell-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.notif-bell-btn:active {
+  transform: scale(0.92);
+}
+
+/* ── shake cuando llega nueva notificación ── */
+.notif-bell-shake {
+  animation: bellShake 0.6s ease;
+}
+
+@keyframes bellShake {
+  0%,  100% { transform: rotate(0deg); }
+  15%       { transform: rotate(-18deg); }
+  30%       { transform: rotate(18deg); }
+  45%       { transform: rotate(-12deg); }
+  60%       { transform: rotate(12deg); }
+  75%       { transform: rotate(-6deg); }
+  90%       { transform: rotate(6deg); }
+}
+
+/* ── badge de cantidad ── */
+.notif-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  min-width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, #DC2626, #B91C1C);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  box-shadow: 0 1px 4px rgba(220, 38, 38, 0.4);
+  animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes badgePop {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* ═══════════════════════════════════════════
+   PANEL DROPDOWN
+   ═══════════════════════════════════════════ */
+.notif-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 360px;
+  max-width: 90vw;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+  border: 1px solid #F3F4F6;
+  z-index: 1000;
+  animation: panelSlideIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+}
+
+@keyframes panelSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── header del panel ── */
+.notif-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.notif-panel-header h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1F2937;
+  margin: 0;
+}
+
+.notif-mark-all {
+  font-size: 0.75rem;
+  color: #DC2626;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.2rem 0;
+  transition: color 0.2s;
+}
+
+.notif-mark-all:hover {
+  color: #B91C1C;
+  text-decoration: underline;
+}
+
+/* ── lista de notificaciones ── */
+.notif-panel-list {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.notif-panel-list::-webkit-scrollbar {
+  width: 6px;
+}
+.notif-panel-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.notif-panel-list::-webkit-scrollbar-thumb {
+  background: #E5E7EB;
+  border-radius: 3px;
+}
+
+/* ── estado vacío ── */
+.notif-panel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  color: #9CA3AF;
+  gap: 0.75rem;
+}
+
+.notif-panel-empty p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* spinner de carga */
+.notif-loading-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #E5E7EB;
+  border-top-color: #DC2626;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════
+   ITEM DE NOTIFICACIÓN
+   ═══════════════════════════════════════════ */
+.notif-item {
+  display: flex;
+  gap: 0.85rem;
+  padding: 0.9rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+  border-bottom: 1px solid #F9FAFB;
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item:hover {
+  background: #FAFAFA;
+}
+
+/* no leída = fondo tintado */
+.notif-item-unread {
+  background: #FEFEFE;
+}
+.notif-item-unread:hover {
+  background: #FEF2F2;
+}
+
+/* leída = más opaca */
+.notif-item-read .notif-item-title,
+.notif-item-read .notif-item-msg {
+  opacity: 0.6;
+}
+
+/* ── icono circular del tipo ── */
+.notif-item-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+/* ── contenido textual ── */
+.notif-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.notif-item-type {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.notif-item-time {
+  font-size: 0.7rem;
+  color: #9CA3AF;
+  white-space: nowrap;
+}
+
+.notif-item-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1F2937;
+  margin: 0 0 0.2rem;
+  line-height: 1.3;
+}
+
+.notif-item-msg {
+  font-size: 0.78rem;
+  color: #6B7280;
+  margin: 0;
+  line-height: 1.4;
+  /* limitar a 2 líneas */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── tags de datos extra (monto, fecha) ── */
+.notif-item-tag {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  margin-right: 0.35rem;
+}
+
+.notif-tag-monto {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.notif-tag-fecha {
+  background: #EDE9FE;
+  color: #5B21B6;
+}
+
+/* ── punto de no leído (esquina superior derecha) ── */
+.notif-item-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  background: #DC2626;
+  border-radius: 50%;
+  margin-top: 6px;
+  box-shadow: 0 0 4px rgba(220, 38, 38, 0.4);
+}
