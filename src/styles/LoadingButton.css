@@ -1,0 +1,246 @@
+/* ═══════════════════════════════════════════════════════════
+   LOADING BUTTON - Botón con transiciones de carga y resultado
+   ═══════════════════════════════════════════════════════════ */
+
+   .loading-button-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* ─── Botón base ─── */
+  .loading-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    min-width: 120px;
+    min-height: 42px;
+    
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  }
+  
+  .loading-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+  
+  .loading-button:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  .loading-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .loading-button--loading {
+    background: linear-gradient(135deg, #9333ea 0%, #c026d3 100%);
+  }
+  
+  /* ─── Contenido del botón ─── */
+  .loading-button__content {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  /* ─── Spinner ─── */
+  .loading-button__spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .loading-button__spinner-text {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  
+  /* ─── Transición fade para contenido/spinner ─── */
+  .fade-enter {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  
+  .fade-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 300ms, transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .fade-exit {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .fade-exit-active {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 300ms, transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* ═══════════════════════════════════════════════════════════
+     ALERTA DE RESULTADO
+     ═══════════════════════════════════════════════════════════ */
+  
+  .loading-button-alert {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    min-width: 280px;
+    
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  /* ─── Alerta de éxito ─── */
+  .loading-button-alert--success {
+    border-left: 4px solid #10b981;
+    color: #065f46;
+  }
+  
+  .loading-button-alert--success .loading-button-alert__icon {
+    color: #10b981;
+  }
+  
+  /* ─── Alerta de error ─── */
+  .loading-button-alert--error {
+    border-left: 4px solid #ef4444;
+    color: #991b1b;
+  }
+  
+  .loading-button-alert--error .loading-button-alert__icon {
+    color: #ef4444;
+  }
+  
+  /* ─── Icono ─── */
+  .loading-button-alert__icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* ─── Mensaje ─── */
+  .loading-button-alert__message {
+    flex: 1;
+    line-height: 1.4;
+  }
+  
+  /* ─── Botón cerrar ─── */
+  .loading-button-alert__close {
+    flex-shrink: 0;
+    padding: 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: currentColor;
+    opacity: 0.5;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  
+  .loading-button-alert__close:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
+  /* ─── Transición slide para alertas ─── */
+  .alert-slide-enter {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) scale(0.95);
+  }
+  
+  .alert-slide-enter-active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+    transition: all 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .alert-slide-exit {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  
+  .alert-slide-exit-active {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) scale(0.95);
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* ═══════════════════════════════════════════════════════════
+     VARIANTES DE BOTÓN
+     ═══════════════════════════════════════════════════════════ */
+  
+  /* ─── Botón secundario ─── */
+  .loading-button--secondary {
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    box-shadow: 0 2px 8px rgba(100, 116, 139, 0.3);
+  }
+  
+  .loading-button--secondary:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
+  }
+  
+  /* ─── Botón éxito ─── */
+  .loading-button--success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+  
+  .loading-button--success:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+  
+  /* ─── Botón peligro ─── */
+  .loading-button--danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+  
+  .loading-button--danger:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+  
+  /* ─── Botón pequeño ─── */
+  .loading-button--small {
+    padding: 8px 16px;
+    min-width: 100px;
+    min-height: 36px;
+    font-size: 13px;
+  }
+  
+  /* ─── Botón grande ─── */
+  .loading-button--large {
+    padding: 14px 28px;
+    min-width: 160px;
+    min-height: 50px;
+    font-size: 16px;
+  }

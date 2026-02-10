@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import echo from '../plugins/echo';
 import api from '../plugins/axios';
+import LoadingButton from './LoadingButton';
 import '../styles/DepartmentChat.css';
 
 function DepartmentChat({ 
@@ -8,137 +9,21 @@ function DepartmentChat({
   currentUserId, 
   currentUserName 
 }) {
+  // ════════════════════════════════════════════════════════════
+  // ✅ PASO 1: TODOS LOS HOOKS PRIMERO (useState, useRef)
+  // ════════════════════════════════════════════════════════════
+  
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [isConnected, setIsConnected] = useState(false);
-  const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(false);
   const messagesContainerRef = useRef(null);
 
-  if (!contact) {
-    return (
-      <div className="chat-empty">
-        <div className="chat-empty-content">
-          <h3>Selecciona un contacto</h3>
-          <p>Elige un departamento de la lista para comenzar a chatear</p>
-        </div>
-      </div>
-    );
-  }
+  // ════════════════════════════════════════════════════════════
+  // ✅ PASO 2: TODOS LOS useEffect (también son hooks)
+  // ════════════════════════════════════════════════════════════
 
-  const scrollToBottom = () => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-    }
-  };
-
-  const loadMessages = async (departmentId) => {
-    setLoading(true);
-    try {
-      console.log('📥 Cargando mensajes del departamento:', departmentId);
-      const response = await api.get('/chat/messages', {
-        params: { department_id: departmentId }
-      });
-      console.log('✅ Mensajes cargados:', response.data);
-      setMessages(response.data);
-      setTimeout(scrollToBottom, 100);
-    } catch (error) {
-      console.error('❌ Error loading messages:', error);
-      console.error('Error details:', error.response?.data);
-      
-      // Si falla, mostrar mensajes de ejemplo para ese departamento
-      const exampleMessages = getExampleMessages(departmentId);
-      setMessages(exampleMessages);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Mensajes de ejemplo para visualización (diferentes por departamento)
-  const getExampleMessages = (departmentId) => {
-    const baseMessages = {
-      1: [
-        { id: 1, user_id: 2, user_name: 'Juan Pérez', message: 'Hola, buenos días', created_at: '2026-01-27T09:10:00' },
-        { id: 2, user_id: 999, user_name: 'Admin Sistema', message: 'Buenos días, ¿en qué puedo ayudarte?', created_at: '2026-01-27T09:11:00' },
-      ],
-      2: [
-        { id: 3, user_id: 3, user_name: 'María García', message: '¿A qué hora es la reunión?', created_at: '2026-01-27T09:15:00' },
-        { id: 4, user_id: 999, user_name: 'Admin Sistema', message: 'La reunión es a las 18:00', created_at: '2026-01-27T09:16:00' },
-      ],
-      3: [
-        { id: 5, user_id: 4, user_name: 'Carlos López', message: 'Perfecto, nos vemos entonces', created_at: '2026-01-27T08:45:00' },
-        { id: 6, user_id: 999, user_name: 'Admin Sistema', message: 'Claro, hasta luego', created_at: '2026-01-27T08:46:00' },
-      ],
-      4: [
-        { id: 7, user_id: 5, user_name: 'Ana Martínez', message: 'Ok, entendido', created_at: '2026-01-26T10:30:00' },
-      ],
-    };
-
-    return baseMessages[departmentId] || [];
-  };
-
-  const sendMessage = async () => {
-    if (!newMessage.trim() || sending) return;
-
-    const messageData = {
-      message: newMessage,
-      department_id: contact.departmentId,
-      user_id: currentUserId,
-      user_name: currentUserName
-    };
-
-    setSending(true);
-    const tempMessage = {
-      id: Date.now(),
-      user_id: currentUserId,
-      user_name: currentUserName,
-      message: newMessage,
-      created_at: new Date().toISOString(),
-    };
-
-    try {
-      console.log('📤 Enviando mensaje:', messageData);
-      const response = await api.post('/chat/messages', messageData);
-      console.log('✅ Mensaje enviado:', response.data);
-      
-      // Reemplazar el mensaje temporal con el real
-      setMessages(prev => {
-        const filtered = prev.filter(m => m.id !== tempMessage.id);
-        return [...filtered, response.data.message];
-      });
-      setNewMessage('');
-      setTimeout(scrollToBottom, 100);
-    } catch (error) {
-      console.error('❌ Error sending message:', error);
-      console.error('Error details:', error.response?.data);
-      
-      // Agregar el mensaje localmente para visualización
-      setMessages(prev => [...prev, tempMessage]);
-      setNewMessage('');
-      setTimeout(scrollToBottom, 100);
-      
-      alert('Error al enviar el mensaje. Verifica que el backend esté corriendo.');
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
-
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('es-MX', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-  };
-
-  // IMPORTANTE: Este useEffect se ejecuta cada vez que cambia el contacto
+  // useEffect #1: Cargar mensajes y conectar WebSocket cuando cambia el contacto
   useEffect(() => {
     if (!contact) return;
 
@@ -149,9 +34,47 @@ function DepartmentChat({
     setIsConnected(false);
     
     // Cargar mensajes del nuevo departamento
+    const loadMessages = async (departmentId) => {
+      setLoading(true);
+      try {
+        console.log('📥 Cargando mensajes del departamento:', departmentId);
+        const response = await api.get('/chat/messages', {
+          params: { department_id: departmentId }
+        });
+        console.log('✅ Mensajes cargados:', response.data);
+        setMessages(response.data);
+        setTimeout(() => {
+          if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+          }
+        }, 100);
+      } catch (error) {
+        console.error('❌ Error loading messages:', error);
+        
+        // Si falla, mostrar mensajes de ejemplo
+        const baseMessages = {
+          1: [
+            { id: 1, user_id: 2, user_name: 'Juan Pérez', message: 'Hola, buenos días', created_at: '2026-01-27T09:10:00' },
+            { id: 2, user_id: 999, user_name: 'Admin Sistema', message: 'Buenos días, ¿en qué puedo ayudarte?', created_at: '2026-01-27T09:11:00' },
+          ],
+          2: [
+            { id: 3, user_id: 3, user_name: 'María García', message: '¿A qué hora es la reunión?', created_at: '2026-01-27T09:15:00' },
+            { id: 4, user_id: 999, user_name: 'Admin Sistema', message: 'La reunión es a las 18:00', created_at: '2026-01-27T09:16:00' },
+          ],
+          3: [
+            { id: 5, user_id: 4, user_name: 'Carlos López', message: 'Perfecto, nos vemos entonces', created_at: '2026-01-27T08:45:00' },
+            { id: 6, user_id: 999, user_name: 'Admin Sistema', message: 'Claro, hasta luego', created_at: '2026-01-27T08:46:00' },
+          ],
+        };
+        setMessages(baseMessages[departmentId] || []);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadMessages(contact.departmentId);
 
-    // Desconectar del canal anterior y conectar al nuevo
+    // Conectar WebSocket
     const channelName = `department.${contact.departmentId}`;
     
     try {
@@ -159,9 +82,8 @@ function DepartmentChat({
       
       channel
         .listen('.message.sent', (e) => {
-          console.log('📨 Mensaje recibido en tiempo real:', e);
+          console.log('📨 Mensaje recibido:', e);
           setMessages(prev => [...prev, e]);
-          setTimeout(scrollToBottom, 100);
         })
         .subscribed(() => {
           console.log('✅ Conectado al canal:', channelName);
@@ -181,11 +103,75 @@ function DepartmentChat({
       console.error('Error conectando WebSocket:', error);
       setIsConnected(false);
     }
-  }, [contact]); // ← CLAVE: Se ejecuta cuando cambia contact
+  }, [contact]);
 
+  // useEffect #2: Auto-scroll cuando cambian los mensajes
   useEffect(() => {
-    scrollToBottom();
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, [messages]);
+
+  // ════════════════════════════════════════════════════════════
+  // ✅ PASO 3: AHORA SÍ el early return (después de TODOS los hooks)
+  // ════════════════════════════════════════════════════════════
+  
+  if (!contact) {
+    return (
+      <div className="chat-empty">
+        <div className="chat-empty-content">
+          <h3>Selecciona un contacto</h3>
+          <p>Elige un departamento de la lista para comenzar a chatear</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // ✅ PASO 4: Funciones auxiliares
+  // ════════════════════════════════════════════════════════════
+
+  // ✨ Función para enviar mensaje usando LoadingButton
+  const sendMessage = async () => {
+    if (!newMessage.trim()) {
+      throw new Error('El mensaje no puede estar vacío');
+    }
+
+    const messageData = {
+      message: newMessage,
+      department_id: contact.departmentId,
+      user_id: currentUserId,
+      user_name: currentUserName
+    };
+
+    console.log('📤 Enviando mensaje:', messageData);
+    const response = await api.post('/chat/messages', messageData);
+    console.log('✅ Mensaje enviado:', response.data);
+    
+    setMessages(prev => [...prev, response.data.message]);
+    setNewMessage('');
+
+    return { message: 'Mensaje enviado' };
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      document.querySelector('.chat-send-button')?.click();
+    }
+  };
+
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('es-MX', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // ✅ PASO 5: RENDER
+  // ════════════════════════════════════════════════════════════
 
   return (
     <div className="chat-main">
@@ -276,26 +262,21 @@ function DepartmentChat({
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Escribe un mensaje..."
-          disabled={sending}
           maxLength={1000}
           className="message-input"
         />
-        <button 
+        
+        <LoadingButton
           onClick={sendMessage}
-          disabled={!newMessage.trim() || sending}
-          className="send-btn"
-          title="Enviar"
+          className="loading-button--small chat-send-button"
+          successMessage="Mensaje enviado"
+          errorMessage="Error al enviar el mensaje"
+          disabled={!newMessage.trim()}
         >
-          {sending ? (
-            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" className="spinner">
-              <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
-            </svg>
-          ) : (
-            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-            </svg>
-          )}
-        </button>
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </LoadingButton>
       </div>
     </div>
   );
