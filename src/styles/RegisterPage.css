@@ -1,0 +1,262 @@
+/* ═══════════════════════════════════════════════════════════
+   REGISTER PAGE
+   ═══════════════════════════════════════════════════════════ */
+
+   .register-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+  }
+  
+  .register-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 480px;
+    padding: 40px;
+  }
+  
+  .register-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  
+  .register-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  
+  .register-header p {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+  }
+  
+  /* ─── Formulario ─── */
+  
+  .register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+  }
+  
+  .form-group input {
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  
+  .form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  .form-group input.input-error {
+    border-color: #ef4444;
+  }
+  
+  .error-message {
+    font-size: 13px;
+    color: #ef4444;
+    margin-top: -2px;
+  }
+  
+  /* ─── Password input ─── */
+  
+  .password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .password-input-wrapper input {
+    width: 100%;
+    padding-right: 48px;
+  }
+  
+  .toggle-password {
+    position: absolute;
+    right: 12px;
+    padding: 6px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  
+  .toggle-password:hover {
+    background: #f1f5f9;
+    color: #475569;
+  }
+  
+  /* ─── Botón de registro ─── */
+  
+  .btn-register {
+    width: 100%;
+    margin-top: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  }
+  
+  /* ─── Footer ─── */
+  
+  .register-footer {
+    margin-top: 24px;
+    text-align: center;
+  }
+  
+  .register-footer p {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+  }
+  
+  .link-primary {
+    color: #667eea;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  
+  .link-primary:hover {
+    color: #5568d3;
+    text-decoration: underline;
+  }
+  
+  /* ═══════════════════════════════════════════════════════════
+     SUCCESS CARD (después del registro)
+     ═══════════════════════════════════════════════════════════ */
+  
+  .register-success-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 480px;
+    padding: 48px 40px;
+    text-align: center;
+  }
+  
+  .success-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 50%;
+    color: #fff;
+    margin-bottom: 24px;
+  }
+  
+  .register-success-card h2 {
+    margin: 0 0 16px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  
+  .register-success-card p {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.6;
+  }
+  
+  .register-success-card strong {
+    display: block;
+    margin: 12px 0;
+    font-size: 16px;
+    color: #667eea;
+  }
+  
+  .verification-note {
+    margin-top: 20px !important;
+    padding: 16px;
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    border-radius: 8px;
+    font-size: 13px !important;
+    color: #1e40af !important;
+    text-align: left;
+  }
+  
+  /* ─── Acciones de éxito ─── */
+  
+  .success-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 32px;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+  
+  .btn-secondary {
+    background: transparent;
+    color: #667eea;
+    border: 2px solid #667eea;
+  }
+  
+  .btn-secondary:hover {
+    background: #f8f9ff;
+  }
+  
+  /* ═══════════════════════════════════════════════════════════
+     RESPONSIVE
+     ═══════════════════════════════════════════════════════════ */
+  
+  @media (max-width: 640px) {
+    .register-card,
+    .register-success-card {
+      padding: 32px 24px;
+    }
+  
+    .register-header h1 {
+      font-size: 24px;
+    }
+  }

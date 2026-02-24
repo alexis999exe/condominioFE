@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import '../styles/LoadingButton.css';
 
@@ -23,6 +23,11 @@ function LoadingButton({
 }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null); // { type: 'success' | 'error', message: string }
+  
+  // Refs para CSSTransition (evita warning de findDOMNode)
+  const contentRef = useRef(null);
+  const spinnerRef = useRef(null);
+  const alertRef = useRef(null);
 
   const handleClick = async () => {
     if (loading || disabled) return;
@@ -75,8 +80,9 @@ function LoadingButton({
           timeout={300}
           classNames="fade"
           unmountOnExit
+          nodeRef={contentRef}
         >
-          <span className="loading-button__content">{children}</span>
+          <span ref={contentRef} className="loading-button__content">{children}</span>
         </CSSTransition>
 
         {/* Spinner de carga */}
@@ -85,8 +91,9 @@ function LoadingButton({
           timeout={300}
           classNames="fade"
           unmountOnExit
+          nodeRef={spinnerRef}
         >
-          <span className="loading-button__spinner">
+          <span ref={spinnerRef} className="loading-button__spinner">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z">
                 <animateTransform
@@ -110,8 +117,9 @@ function LoadingButton({
         timeout={400}
         classNames="alert-slide"
         unmountOnExit
+        nodeRef={alertRef}
       >
-        <div className={`loading-button-alert loading-button-alert--${result?.type || 'success'}`}>
+        <div ref={alertRef} className={`loading-button-alert loading-button-alert--${result?.type || 'success'}`}>
           <div className="loading-button-alert__icon">
             {result?.type === 'success' ? (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
