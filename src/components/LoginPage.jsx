@@ -1,44 +1,79 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../plugins/axios';
-import LoadingButton from './LoadingButton';
 import '../styles/LoginPage.css';
 
 function LoginPage({ onLogin }) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [needsVerification, setNeedsVerification] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async () => {
+  // Detectar nombre del dispositivo
+  const getDeviceName = () => {
+    const ua = navigator.userAgent;
+    
+    if (/iPhone/.test(ua)) return 'iPhone';
+    if (/iPad/.test(ua)) return 'iPad';
+    if (/Android/.test(ua)) return 'Android';
+    if (/Chrome/.test(ua)) return 'Chrome Desktop';
+    if (/Firefox/.test(ua)) return 'Firefox Desktop';
+    if (/Safari/.test(ua)) return 'Safari Desktop';
+    if (/Edge/.test(ua)) return 'Edge Desktop';
+    
+    return 'Navegador Web';
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    
+    if (!email || !password || isLoading) return;
+    
+    setIsLoading(true);
+    
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', { 
+        email, 
+        password,
+        device_name: getDeviceName() // ← Enviar nombre del dispositivo
+      });
       
-      // Guardar token en localStorage
+      console.log('✅ Login exitoso:', response.data);
+      
+      // Guardar token
       localStorage.setItem('token', response.data.token);
-      
-      // Configurar header de axios para futuras peticiones
+      localStorage.setItem('device_name', response.data.device_name);
       api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       
-      // Llamar callback con usuario y token
+      // Actualizar estado
       onLogin(response.data.user, response.data.token);
       
-      return { message: 'Login exitoso' };
+      console.log('🚀 Navegando a /chat');
+      
+      // Navegar
+      navigate('/chat', { replace: true });
+      
     } catch (error) {
-      // Si el email no está verificado
+      console.error('❌ Error en login:', error);
+      
+      setIsLoading(false);
+      
       if (error.response?.data?.email_verified === false) {
         setNeedsVerification(true);
+      } else {
+        alert(error.response?.data?.message || 'Credenciales incorrectas');
       }
-      throw error;
     }
   };
 
   const handleResendVerification = async () => {
     try {
       await api.post('/auth/resend-verification', { email });
-      return { message: 'Email de verificación reenviado. Revisa tu correo.' };
+      alert('Email de verificación reenviado. Revisa tu correo.');
     } catch (error) {
-      throw error;
+      alert('Error al reenviar el email');
     }
   };
 
@@ -62,17 +97,39 @@ function LoginPage({ onLogin }) {
             <strong>{email}</strong>
             
             <div className="verification-actions">
-              <LoadingButton
+              <button
                 onClick={handleResendVerification}
-                className="loading-button--large"
-                successMessage="Email reenviado"
+                className="btn-primary"
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  border: 'none',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  marginBottom: '12px',
+                }}
               >
                 Reenviar email de verificación
-              </LoadingButton>
+              </button>
               
               <button 
                 className="btn-secondary"
                 onClick={() => setNeedsVerification(false)}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  background: 'transparent',
+                  color: '#dc2626',
+                  border: '2px solid #dc2626',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                }}
               >
                 Volver al login
               </button>
@@ -91,7 +148,7 @@ function LoginPage({ onLogin }) {
           <p>Inicia sesión para acceder</p>
         </div>
 
-        <form className="login-form" onSubmit={(e) => e.preventDefault()}>
+        <form className="login-form" onSubmit={handleLogin}>
           <div className="form-group">
             <label htmlFor="email">Correo electrónico</label>
             <input
@@ -101,6 +158,8 @@ function LoginPage({ onLogin }) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@email.com"
               autoComplete="email"
+              disabled={isLoading}
+              required
             />
           </div>
 
@@ -114,26 +173,42 @@ function LoginPage({ onLogin }) {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 autoComplete="current-password"
+                disabled={isLoading}
+                required
               />
               <button
                 type="button"
                 className="toggle-password"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
               >
                 {showPassword ? '👁️' : '👁️‍🗨️'}
               </button>
             </div>
           </div>
 
-          <LoadingButton
-            onClick={handleLogin}
-            className="loading-button--large btn-login"
-            successMessage="Login exitoso"
-            errorMessage="Credenciales incorrectas"
-            disabled={!email || !password}
+          <button
+            type="submit"
+            disabled={!email || !password || isLoading}
+            className="btn-login"
+            style={{
+              width: '100%',
+              padding: '14px',
+              fontSize: '15px',
+              fontWeight: '600',
+              border: 'none',
+              borderRadius: '12px',
+              background: isLoading 
+                ? '#999' 
+                : 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+              color: '#fff',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.3s',
+              boxShadow: '0 4px 16px rgba(220, 38, 38, 0.3)',
+            }}
           >
-            Iniciar sesión
-          </LoadingButton>
+            {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+          </button>
 
           <div className="login-footer">
             <p>

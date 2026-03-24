@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import NotificationBell from './NotificationBell';
+import DevicesManager from './DevicesManager.jsx';
+import ChangePassword from './ChangePassword.jsx';
+import NotificationBell from './NotificationBell.jsx';
+
 import '../styles/ContactList.css';
 
 // ── contactos de ejemplo (misma estructura que antes) ──
@@ -14,6 +17,8 @@ const contacts = [
 
 function ContactList({ onSelectContact, selectedContact, currentUser, onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showDevices, setShowDevices] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   const filteredContacts = contacts.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -48,6 +53,25 @@ function ContactList({ onSelectContact, selectedContact, currentUser, onLogout }
                 <line x1="21" y1="12" x2="9" y2="12"/>
               </svg>
             </button>
+
+            <button 
+              className="contact-icon-btn" 
+              onClick={() => setShowDevices(true)}
+              title="Dispositivos activos"
+            >
+              📱
+            </button>
+
+            <button 
+              className="contact-icon-btn" 
+              onClick={() => setShowChangePassword(true)}
+              title="Cambiar contraseña"
+            >
+              🔑
+            </button>
+
+            {showDevices && <DevicesManager onClose={() => setShowDevices(false)} />}
+            {showChangePassword && <ChangePassword onClose={() => setShowChangePassword(false)} />}
           </div>
         </div>
 
