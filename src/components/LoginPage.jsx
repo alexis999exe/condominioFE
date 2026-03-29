@@ -163,7 +163,8 @@ function LoginPage({ onLogin }) {
 
           <div className="form-group">
             <div className="label-row">
-              <label htmlFor="password">Contraseña</label>
+              <label htmlFor="password">Contraseña     </label>
+              
               <Link to="/forgot-password" className="forgot-link">
                 ¿Olvidaste tu contraseña?
               </Link>
