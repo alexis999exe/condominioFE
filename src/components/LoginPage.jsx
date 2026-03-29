@@ -37,22 +37,19 @@ function LoginPage({ onLogin }) {
       const response = await api.post('/auth/login', { 
         email, 
         password,
-        device_name: getDeviceName() // ← Enviar nombre del dispositivo
+        device_name: getDeviceName()
       });
       
       console.log('✅ Login exitoso:', response.data);
       
-      // Guardar token
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('device_name', response.data.device_name);
       api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       
-      // Actualizar estado
       onLogin(response.data.user, response.data.token);
       
       console.log('🚀 Navegando a /chat');
       
-      // Navegar
       navigate('/chat', { replace: true });
       
     } catch (error) {
@@ -164,7 +161,12 @@ function LoginPage({ onLogin }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
+            <div className="label-row">
+              <label htmlFor="password">Contraseña</label>
+              <Link to="/forgot-password" className="forgot-link">
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </div>
             <div className="password-input-wrapper">
               <input
                 type={showPassword ? 'text' : 'password'}

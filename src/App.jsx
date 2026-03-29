@@ -2,35 +2,30 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 import ContactList from './components/ContactList';
 import DepartmentChat from './components/DepartmentChat';
 import api from './plugins/axios';
 import './App.css';
 
 function App() {
-  // ── autenticación ──
   const [currentUser, setCurrentUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // ── chat (existente) ──
   const [selectedContact, setSelectedContact] = useState(null);
 
-  // ── Verificar si hay token guardado al cargar la app ──
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     if (savedToken) {
-      // Configurar token en axios
       api.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
       
-      // Obtener datos del usuario
       api.get('/auth/me')
         .then(response => {
           setCurrentUser(response.data.user);
           setToken(savedToken);
         })
         .catch(() => {
-          // Token inválido, limpiar
           localStorage.removeItem('token');
           delete api.defaults.headers.common['Authorization'];
         })
@@ -42,22 +37,18 @@ function App() {
     }
   }, []);
 
-  // ── login ──
   const handleLogin = (user, authToken) => {
     setCurrentUser(user);
     setToken(authToken);
     console.log('✅ Login exitoso:', user);
   };
 
-  // ── logout ──
   const handleLogout = async () => {
     try {
-      // Llamar al endpoint de logout (opcional)
       await api.post('/auth/logout');
     } catch (error) {
       console.error('Error en logout:', error);
     } finally {
-      // Limpiar estado local
       setCurrentUser(null);
       setToken(null);
       setSelectedContact(null);
@@ -67,7 +58,6 @@ function App() {
     }
   };
 
-  // ── Pantalla de carga inicial ──
   if (loading) {
     return (
       <div className="app-loading">
@@ -95,6 +85,22 @@ function App() {
             currentUser ? 
               <Navigate to="/chat" replace /> : 
               <RegisterPage />
+          } 
+        />
+        <Route 
+          path="/forgot-password" 
+          element={
+            currentUser ? 
+              <Navigate to="/chat" replace /> : 
+              <ForgotPassword />
+          } 
+        />
+        <Route 
+          path="/reset-password" 
+          element={
+            currentUser ? 
+              <Navigate to="/chat" replace /> : 
+              <ResetPassword />
           } 
         />
 
